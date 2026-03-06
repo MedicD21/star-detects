@@ -46,6 +46,7 @@ let refEmbeddings = [];
 let webcamStream = null;
 let animationFrameId = null;
 let uploadedImageObj = null;
+let uploadedImageUrl = null;
 let isRunningWebcam = false;
 let frameCount = 0;
 
@@ -55,6 +56,10 @@ const PROPOSAL_STRIDE = 8;
 
 function setStatus(text) {
   statusEl.textContent = text;
+}
+
+function clearOverlay() {
+  overlayCtx.clearRect(0, 0, overlay.width, overlay.height);
 }
 
 function updateSliderLabels() {
@@ -496,6 +501,7 @@ async function startWebcam() {
     uploadedPreview.style.display = "none";
     video.style.display = "block";
     video.srcObject = webcamStream;
+    clearOverlay();
 
     await video.play();
 
@@ -529,6 +535,7 @@ function stopWebcam() {
   }
 
   video.srcObject = null;
+  clearOverlay();
   startBtn.disabled = false;
   stopBtn.disabled = true;
   setStatus("Ready");
@@ -538,6 +545,10 @@ uploadInput.addEventListener("change", async (event) => {
   const file = event.target.files?.[0];
   if (!file) return;
 
+  if (uploadedImageUrl) {
+    URL.revokeObjectURL(uploadedImageUrl);
+  }
+
   const url = URL.createObjectURL(file);
   const img = new Image();
   img.src = url;
@@ -545,6 +556,7 @@ uploadInput.addEventListener("change", async (event) => {
   await waitForImage(img);
 
   uploadedImageObj = img;
+  uploadedImageUrl = url;
   uploadedPreview.src = url;
   uploadedPreview.style.display = "block";
   video.style.display = "none";
@@ -610,7 +622,7 @@ initMediaPipe().catch((error) => {
       Failed to initialize MediaPipe.
     </div>
     <div class="small">
-      Open the browser console and verify that star.png is present and the model URLs are reachable.
+      Open the browser console and verify that the reference image asset and model URLs are reachable.
     </div>
   `;
 });

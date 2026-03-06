@@ -191,6 +191,7 @@ video,
 }
 
 video,
+#overlay,
 #uploadedPreview {
   object-fit: contain;
   background: #000;
@@ -202,6 +203,7 @@ video,
 
 #overlay {
   pointer-events: none;
+  background: transparent;
 }
 
 .hidden {
