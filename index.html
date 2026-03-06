@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MediaPipe Star Detector</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="header">
+        <div>
+          <h1>MediaPipe Star Detector</h1>
+          <p>
+            Reference-image detection using MediaPipe Image Embedder and
+            multi-scale candidate matching.
+          </p>
+        </div>
+        <div id="status" class="status">Loading model…</div>
+      </header>
+
+      <section class="controls card">
+        <div class="controls-row">
+          <button id="startBtn">Start Webcam</button>
+          <button id="stopBtn" disabled>Stop Webcam</button>
+          <label class="upload-label">
+            Upload image
+            <input id="uploadInput" type="file" accept="image/*" />
+          </label>
+          <button id="runImageBtn" disabled>Detect In Uploaded Image</button>
+        </div>
+
+        <div class="controls-grid">
+          <label>
+            Similarity Threshold
+            <input
+              id="threshold"
+              type="range"
+              min="0.60"
+              max="0.98"
+              step="0.01"
+              value="0.84"
+            />
+            <span id="thresholdValue">0.84</span>
+          </label>
+
+          <label>
+            Max Proposals
+            <input
+              id="maxProposals"
+              type="range"
+              min="10"
+              max="120"
+              step="1"
+              value="40"
+            />
+            <span id="maxProposalsValue">40</span>
+          </label>
+
+          <label>
+            Min Box Size
+            <input
+              id="minBoxSize"
+              type="range"
+              min="20"
+              max="150"
+              step="1"
+              value="28"
+            />
+            <span id="minBoxSizeValue">28</span>
+          </label>
+
+          <label>
+            Run Every N Frames
+            <input
+              id="frameStride"
+              type="range"
+              min="1"
+              max="12"
+              step="1"
+              value="4"
+            />
+            <span id="frameStrideValue">4</span>
+          </label>
+        </div>
+      </section>
+
+      <main class="layout">
+        <aside class="sidebar">
+          <div class="card">
+            <h2>Reference</h2>
+            <div class="reference-box">
+              <img id="referenceImage" src="./star.png" alt="Reference star" />
+            </div>
+            <p class="muted">
+              The detector compares image regions against this reference.
+            </p>
+          </div>
+
+          <div class="card">
+            <h2>Results</h2>
+            <div id="resultsPanel" class="results-panel">
+              Waiting for initialization…
+            </div>
+          </div>
+        </aside>
+
+        <section class="viewer card">
+          <h2>Live View</h2>
+          <div class="stage">
+            <video id="video" autoplay playsinline muted></video>
+            <canvas id="overlay"></canvas>
+            <img id="uploadedPreview" alt="Uploaded preview" />
+          </div>
+        </section>
+      </main>
+
+      <canvas id="frameCanvas" class="hidden"></canvas>
+      <canvas id="grayCanvas" class="hidden"></canvas>
+      <canvas id="cropCanvas" class="hidden"></canvas>
+      <canvas id="rotCanvas" class="hidden"></canvas>
+    </div>
+
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>
