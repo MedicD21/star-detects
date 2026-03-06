@@ -1,7 +1,7 @@
 import {
   FilesetResolver,
   ImageEmbedder,
-} from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.22/+esm";
+} from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.32/+esm";
 
 const statusEl = document.getElementById("status");
 const resultsPanel = document.getElementById("resultsPanel");
@@ -78,7 +78,7 @@ updateSliderLabels();
 async function initMediaPipe() {
   setStatus("Loading MediaPipe...");
   const vision = await FilesetResolver.forVisionTasks(
-    "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.22/wasm",
+    "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.32/wasm",
   );
 
   imageEmbedder = await ImageEmbedder.createFromOptions(vision, {
@@ -178,8 +178,8 @@ function waitForImage(img) {
 }
 
 function makeTransformedReference(img, angleDeg, scale = 1) {
-  const baseW = img.naturalWidth;
-  const baseH = img.naturalHeight;
+  const baseW = img.naturalWidth ?? img.width;
+  const baseH = img.naturalHeight ?? img.height;
   const side = Math.ceil(Math.max(baseW, baseH) * scale * 1.8);
 
   rotCanvas.width = side;
@@ -428,7 +428,7 @@ function drawDetections(detections, width, height) {
   overlayCtx.lineWidth = 3;
   overlayCtx.font = "16px sans-serif";
 
-  detections.forEach((det, index) => {
+  detections.forEach((det) => {
     overlayCtx.strokeStyle = "rgba(255, 216, 77, 0.95)";
     overlayCtx.fillStyle = "rgba(255, 216, 77, 0.18)";
     overlayCtx.fillRect(det.x, det.y, det.w, det.h);
