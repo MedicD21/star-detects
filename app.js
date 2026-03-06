@@ -97,13 +97,13 @@ async function initMediaPipe() {
 }
 
 async function buildReferenceEmbeddings() {
-  await waitForImage(referenceImage);
+  const referenceCanvas = await loadReferenceSource();
 
   refEmbeddings = [];
 
   for (const scale of REFERENCE_SCALES) {
     for (const angle of ROTATIONS) {
-      const canvas = makeTransformedReference(referenceImage, angle, scale);
+      const canvas = makeTransformedReference(referenceCanvas, angle, scale);
       const embedding = embedCanvas(canvas);
       if (embedding) {
         refEmbeddings.push({
@@ -114,6 +114,55 @@ async function buildReferenceEmbeddings() {
       }
     }
   }
+}
+
+async function loadReferenceSource() {
+  try {
+    await waitForImage(referenceImage);
+    return referenceImage;
+  } catch (error) {
+    console.warn("Reference image failed to load, using built-in fallback.", error);
+    return createFallbackReferenceCanvas();
+  }
+}
+
+function createFallbackReferenceCanvas() {
+  const size = 256;
+  const canvas = document.createElement("canvas");
+  canvas.width = size;
+  canvas.height = size;
+
+  const ctx = canvas.getContext("2d");
+  ctx.clearRect(0, 0, size, size);
+  ctx.translate(size / 2, size / 2);
+  ctx.fillStyle = "#ffffff";
+  drawStarPath(ctx, 5, 0, 0, size * 0.4, size * 0.18);
+  ctx.fill();
+
+  return canvas;
+}
+
+function drawStarPath(ctx, points, cx, cy, outerRadius, innerRadius) {
+  const step = Math.PI / points;
+  let angle = -Math.PI / 2;
+
+  ctx.beginPath();
+
+  for (let i = 0; i < points * 2; i++) {
+    const radius = i % 2 === 0 ? outerRadius : innerRadius;
+    const x = cx + Math.cos(angle) * radius;
+    const y = cy + Math.sin(angle) * radius;
+
+    if (i === 0) {
+      ctx.moveTo(x, y);
+    } else {
+      ctx.lineTo(x, y);
+    }
+
+    angle += step;
+  }
+
+  ctx.closePath();
 }
 
 function waitForImage(img) {
